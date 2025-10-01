@@ -50,6 +50,106 @@ python example_02_state_modification.py
 
 Demonstrates:
 - Registering event callbacks
+- Monitoring simulation lifecycle events
+- Timestep-level control
+- State change notifications
+
+**Usage:**
+```bash
+python example_03_event_driven.py
+```
+
+### Example 4: Occupancy Forecasting
+**File:** `example_04_occupancy_forecasting.py`
+
+Demonstrates:
+- Training occupancy forecasting models
+- Generating predictions with confidence intervals
+- Model evaluation and persistence
+- Integration with simulation workflow
+
+**Usage:**
+```bash
+python example_04_occupancy_forecasting.py
+```
+
+**Requirements:**
+- pandas
+- numpy
+- scikit-learn
+
+### Example 5: Multi-Zone Simulation
+**File:** `example_05_multi_zone.py`
+
+Demonstrates:
+- Managing multiple zones with different IDF files
+- Defining inter-zone connections (airflow, thermal)
+- Coordinated parameter control across zones
+- Configuration import/export
+
+**Usage:**
+```bash
+python example_05_multi_zone.py
+```
+
+**Key Features:**
+- Multiple IDF file support (inspired by nestli)
+- Zone connections for airflow and thermal coupling
+- Coordinated HVAC and ventilation control
+
+### Example 6: Real-Time Monitoring & Adaptive Control
+**File:** `example_06_realtime_control.py`
+
+Demonstrates:
+- Real-time simulation monitoring
+- Threshold-based alerts
+- Adaptive control rules
+- Dynamic parameter modification during execution
+- Historical data collection
+
+**Usage:**
+```bash
+python example_06_realtime_control.py
+```
+
+**Features:**
+- SimulationMonitor for real-time observation
+- AdaptiveController for dynamic control
+- Custom control rules and callbacks
+
+### Example 7: EnergyPlus Python API Integration 🆕
+**File:** `example_07_energyplus_api.py`
+
+Demonstrates:
+- Direct EnergyPlus Python API usage (beyond eppy)
+- Runtime sensor/actuator access
+- Advanced window control strategies
+- Dynamic HVAC control
+- Custom control logic during simulation
+
+**Usage:**
+```bash
+python example_07_energyplus_api.py
+```
+
+**Requirements:**
+- EnergyPlus 9.3 or later
+- pyenergyplus package (`pip install pyenergyplus`)
+
+**Key Capabilities:**
+- Real-time state inspection during simulation
+- Modify parameters while simulation is running
+- Custom control logic with sensors and actuators
+- Integration with external systems and ML models
+
+**Why EnergyPlus Python API?**
+- eppy can only modify IDF files before simulation
+- EnergyPlus Python API provides runtime access
+- Enables adaptive control based on real-time conditions
+- See `ENERGYPLUS_API_INTEGRATION.md` for detailed comparison
+
+Demonstrates:
+- Registering event callbacks
 - Responding to simulation lifecycle events
 - Automatic result saving
 - Error handling with events

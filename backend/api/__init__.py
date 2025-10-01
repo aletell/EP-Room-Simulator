@@ -12,6 +12,7 @@ Main classes:
     - MultiZoneManager: Multi-zone simulation management
     - SimulationMonitor: Real-time simulation monitoring
     - AdaptiveController: Adaptive control for dynamic optimization
+    - EnergyPlusRuntime: Direct EnergyPlus Python API integration
 """
 
 from .simulation_api import SimulationAPI
@@ -28,7 +29,23 @@ from .exceptions import (
     SimulationExecutionError
 )
 
-__version__ = '0.2.0'
+# Optional: EnergyPlus Python API integration
+try:
+    from .energyplus_runtime import (
+        EnergyPlusRuntime,
+        WindowController,
+        HVACController,
+        create_runtime_controller
+    )
+    ENERGYPLUS_RUNTIME_AVAILABLE = True
+except ImportError:
+    ENERGYPLUS_RUNTIME_AVAILABLE = False
+    EnergyPlusRuntime = None
+    WindowController = None
+    HVACController = None
+    create_runtime_controller = None
+
+__version__ = '0.3.0'
 __all__ = [
     'SimulationAPI',
     'StateManager',
@@ -43,5 +60,15 @@ __all__ = [
     'SimulationNotFoundError',
     'InvalidStateError',
     'InvalidParameterError',
-    'SimulationExecutionError'
+    'SimulationExecutionError',
+    'ENERGYPLUS_RUNTIME_AVAILABLE'
 ]
+
+# Add runtime classes if available
+if ENERGYPLUS_RUNTIME_AVAILABLE:
+    __all__.extend([
+        'EnergyPlusRuntime',
+        'WindowController',
+        'HVACController',
+        'create_runtime_controller'
+    ])
