@@ -229,6 +229,149 @@ class StateManager:
             raise InvalidParameterError(f"Variable {variable_name} not found")
             
         return variables[variable_name]
+    
+    def set_hvac_setpoint(self, sim_id: str, zone_name: str, 
+                         heating_setpoint: Optional[float] = None,
+                         cooling_setpoint: Optional[float] = None) -> None:
+        """
+        Set HVAC heating/cooling setpoints for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            heating_setpoint: Heating setpoint temperature in Celsius
+            cooling_setpoint: Cooling setpoint temperature in Celsius
+        """
+        if heating_setpoint is not None:
+            self._set_variable(sim_id, f"{zone_name}_heating_setpoint", heating_setpoint)
+            logger.info(f"Set heating setpoint for {zone_name} to {heating_setpoint}°C")
+            
+        if cooling_setpoint is not None:
+            self._set_variable(sim_id, f"{zone_name}_cooling_setpoint", cooling_setpoint)
+            logger.info(f"Set cooling setpoint for {zone_name} to {cooling_setpoint}°C")
+    
+    def set_lighting_power(self, sim_id: str, zone_name: str, power_density: float) -> None:
+        """
+        Set lighting power density for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            power_density: Lighting power density in W/m²
+        """
+        if power_density < 0:
+            raise InvalidParameterError("Lighting power density must be non-negative")
+            
+        self._set_variable(sim_id, f"{zone_name}_lighting_power", power_density)
+        logger.info(f"Set lighting power for {zone_name} to {power_density} W/m²")
+    
+    def set_equipment_power(self, sim_id: str, zone_name: str, power_density: float) -> None:
+        """
+        Set equipment power density for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            power_density: Equipment power density in W/m²
+        """
+        if power_density < 0:
+            raise InvalidParameterError("Equipment power density must be non-negative")
+            
+        self._set_variable(sim_id, f"{zone_name}_equipment_power", power_density)
+        logger.info(f"Set equipment power for {zone_name} to {power_density} W/m²")
+    
+    def set_ventilation_rate(self, sim_id: str, zone_name: str, 
+                            rate: float, rate_type: str = 'ach') -> None:
+        """
+        Set ventilation rate for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            rate: Ventilation rate
+            rate_type: Type of rate ('ach' for air changes per hour, 'm3/s' for volumetric flow)
+        """
+        if rate < 0:
+            raise InvalidParameterError("Ventilation rate must be non-negative")
+            
+        self._set_variable(sim_id, f"{zone_name}_ventilation_rate", rate)
+        self._set_variable(sim_id, f"{zone_name}_ventilation_rate_type", rate_type)
+        logger.info(f"Set ventilation rate for {zone_name} to {rate} {rate_type}")
+    
+    def get_energy_consumption(self, sim_id: str, zone_name: str) -> Dict[str, float]:
+        """
+        Get energy consumption breakdown for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            
+        Returns:
+            Dictionary with energy consumption by end use (kWh)
+        """
+        variables = self._get_variables(sim_id)
+        
+        return {
+            'heating': variables.get(f"{zone_name}_heating_energy", 0.0),
+            'cooling': variables.get(f"{zone_name}_cooling_energy", 0.0),
+            'lighting': variables.get(f"{zone_name}_lighting_energy", 0.0),
+            'equipment': variables.get(f"{zone_name}_equipment_energy", 0.0),
+            'fans': variables.get(f"{zone_name}_fan_energy", 0.0),
+            'total': variables.get(f"{zone_name}_total_energy", 0.0)
+        }
+    
+    def get_thermal_comfort(self, sim_id: str, zone_name: str) -> Dict[str, float]:
+        """
+        Get thermal comfort metrics for a zone.
+        
+        Args:
+            sim_id: Simulation identifier
+            zone_name: Name of the zone
+            
+        Returns:
+            Dictionary with comfort metrics (PMV, PPD, etc.)
+        """
+        variables = self._get_variables(sim_id)
+        
+        return {
+            'pmv': variables.get(f"{zone_name}_pmv", 0.0),  # Predicted Mean Vote
+            'ppd': variables.get(f"{zone_name}_ppd", 0.0),  # Predicted Percentage Dissatisfied
+            'operative_temperature': variables.get(f"{zone_name}_operative_temp", 0.0)
+        }
+    
+    def batch_set_variables(self, sim_id: str, variables: Dict[str, Any]) -> None:
+        """
+        Set multiple variables at once for efficiency.
+        
+        Args:
+            sim_id: Simulation identifier
+            variables: Dictionary mapping variable names to values
+        """
+        for var_name, value in variables.items():
+            self._set_variable(sim_id, var_name, value)
+        logger.info(f"Set {len(variables)} variables in batch")
+    
+    def get_simulation_progress(self, sim_id: str) -> Dict[str, Any]:
+        """
+        Get detailed simulation progress information.
+        
+        Args:
+            sim_id: Simulation identifier
+            
+        Returns:
+            Dictionary with progress information
+        """
+        state = self._get_state(sim_id)
+        
+        return {
+            'current_timestep': state.get('current_timestep', 0),
+            'total_timesteps': state.get('total_timesteps', 0),
+            'percent_complete': state.get('percent_complete', 0.0),
+            'elapsed_time': state.get('elapsed_time', 0.0),
+            'estimated_remaining': state.get('estimated_remaining', 0.0),
+            'current_date': state.get('current_date', None),
+            'status': state.get('status', 'unknown')
+        }
         
     def list_zones(self, sim_id: str) -> List[str]:
         """
