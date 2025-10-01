@@ -147,4 +147,56 @@ forecast.to_csv('occupancy_forecast.csv')
 
 See [backend/forecast/](backend/forecast/) for more details.
 
+### Production-Ready Monitoring & Logging 🆕
+
+Comprehensive logging and monitoring capabilities for production deployments:
+
+```python
+from backend.api import FileLogger, StructuredLogger, LiveDashboard, MetricsAggregator
+
+# Multi-format file logging (CSV, JSON, Text)
+file_logger = FileLogger('./simulation_logs')
+file_logger.start()
+file_logger.log({'zone_temperature': 23.5, 'window_opening': 0.8})
+
+# Structured event logging
+structured_logger = StructuredLogger('./simulation_logs/structured')
+structured_logger.log_control_action('window_open', {'opening': 0.8})
+structured_logger.log_measurement('zone_temperature', 23.5, '°C')
+
+# Live web dashboard with real-time updates
+dashboard = LiveDashboard(port=5001)
+dashboard.start()  # Access at http://localhost:5001
+dashboard.update_data({'zone_temperature': 23.5})
+
+# Metrics aggregation and export
+metrics = MetricsAggregator()
+metrics.record('zone_temperature', 23.5)
+metrics.export_summary('./metrics_summary.json')
+```
+
+**Features:**
+- **Multiple File Formats:** CSV, JSON Lines, Text logs
+- **Real-Time Monitoring:** tail -f compatible with immediate flush
+- **Live Dashboard:** Web-based visualization with automatic updates
+- **Structured Logging:** Categorized events (control, measurements, alerts, errors)
+- **Metrics Export:** Statistical summaries and time series data
+- **Production Ready:** Error handling, graceful shutdown, resource cleanup
+
+**Usage:**
+```bash
+# Terminal 1: Run simulation with logging
+python examples/example_09_production_monitoring.py
+
+# Terminal 2: Monitor CSV log in real-time
+tail -f simulation_logs/simulation_*.csv
+
+# Terminal 3: Monitor text log
+tail -f simulation_logs/simulation_*.log
+
+# Browser: Open http://localhost:5001 for live dashboard
+```
+
+See [examples/example_09_production_monitoring.py](examples/example_09_production_monitoring.py) for complete working example.
+
 ***

@@ -389,10 +389,126 @@ for width, results in results_map.items():
     print(f"Width {width}m: Average Temperature = {avg_temp}°C")
 ```
 
+### Example 9: Production-Ready Real-Time Monitoring ⭐ **NEW**
+**File:** `example_09_production_monitoring.py`
+
+**This is the most comprehensive example showing a complete production system!**
+
+Demonstrates:
+- **Multiple file logging formats:**
+  - CSV for tabular data (tail -f compatible)
+  - JSON Lines for structured events
+  - Text logs for human-readable monitoring
+  - Structured logging by category (control, measurements, alerts, events, errors)
+- **Live web dashboard:**
+  - Real-time visualization at http://localhost:5001
+  - Automatic updates every second
+  - Temperature trends chart with Chart.js
+  - Activity log with color-coded events
+  - Responsive design
+- **File monitoring capabilities:**
+  - Immediate flush for real-time tail -f monitoring
+  - Multiple concurrent log files
+  - Timestamped entries
+- **Production features:**
+  - Error handling and recovery
+  - Performance metrics tracking
+  - Graceful shutdown
+  - Resource cleanup
+  - Signal handling
+  - Statistics export
+
+**Usage:**
+```bash
+# Terminal 1: Run simulation
+python example_09_production_monitoring.py
+
+# Terminal 2: Monitor CSV log
+tail -f simulation_logs/simulation_*.csv
+
+# Terminal 3: Monitor text log
+tail -f simulation_logs/simulation_*.log
+
+# Browser: Open http://localhost:5001 for live dashboard
+```
+
+**Features Demonstrated:**
+```python
+from api import FileLogger, StructuredLogger, MetricsAggregator, LiveDashboard
+
+# Multi-format file logging
+file_logger = FileLogger('./simulation_logs')
+file_logger.start()
+file_logger.log({'zone_temperature': 23.5, 'window_opening': 0.8})
+
+# Structured event logging
+structured_logger = StructuredLogger('./simulation_logs/structured')
+structured_logger.log_control_action('window_open', {'opening': 0.8})
+structured_logger.log_measurement('zone_temperature', 23.5, '°C')
+structured_logger.log_alert('high_temperature', 'Zone temp > 30°C', 'critical')
+
+# Live web dashboard
+dashboard = LiveDashboard(port=5001)
+dashboard.start()  # Starts Flask server in background thread
+dashboard.update_data({'zone_temperature': 23.5})  # Updates every timestep
+
+# Metrics aggregation
+metrics = MetricsAggregator()
+metrics.record('zone_temperature', 23.5)
+metrics.export_summary('./metrics_summary.json')
+metrics.export_timeseries('./metrics_timeseries.csv')
+```
+
+**Output Files:**
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.csv` - Tabular data
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.jsonl` - JSON events
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.log` - Text log
+- `simulation_logs/structured/control_*.jsonl` - Control actions
+- `simulation_logs/structured/measurements_*.jsonl` - Sensor readings
+- `simulation_logs/structured/alerts_*.jsonl` - System alerts
+- `simulation_logs/structured/events_*.jsonl` - General events
+- `simulation_logs/structured/errors_*.jsonl` - Error log
+- `simulation_logs/metrics_summary.json` - Statistical summary
+- `simulation_logs/metrics_timeseries.csv` - Time series data
+
+**Dashboard Screenshot:**
+The live dashboard shows:
+- Real-time temperature cards with gradients
+- Window opening percentage
+- HVAC setpoints
+- Relative humidity
+- Interactive Chart.js temperature trends
+- Activity log with timestamps
+- Auto-refresh every second
+
+**Requirements:**
+```bash
+pip install pyenergyplus  # EnergyPlus Python API
+pip install flask flask-cors  # For live dashboard (optional)
+```
+
+**Note:** This example is designed for production use and includes comprehensive error handling, logging, and monitoring capabilities suitable for research and industrial applications.
+
+## Quick Start Matrix
+
+| Example | API Level | Real-Time | Dashboard | Logging | Best For |
+|---------|-----------|-----------|-----------|---------|----------|
+| 1 | Basic | No | No | No | Learning API basics |
+| 2 | Intermediate | No | No | No | State modification |
+| 3 | Intermediate | No | No | No | Event-driven control |
+| 4 | Advanced | No | No | No | ML forecasting |
+| 5 | Advanced | No | No | No | Multi-zone setups |
+| 6 | Advanced | Yes | No | No | Real-time control intro |
+| 7 | Advanced | Yes | No | No | EnergyPlus API |
+| 8 | Advanced | Yes | No | Yes | Basic monitoring |
+| **9** | **Production** | **Yes** | **Yes** | **Yes** | **Production systems** ⭐ |
+
 ## Additional Resources
 
 - **Main Documentation:** See [OVERVIEW.md](../OVERVIEW.md) for project architecture
 - **Improvement Plan:** See [IMPROVEMENT_PLAN.md](../IMPROVEMENT_PLAN.md) for future features
+- **Real-Time Control Guide:** See [REALTIME_CONTROL_GUIDE.md](../REALTIME_CONTROL_GUIDE.md) for workflow details
+- **EnergyPlus API Integration:** See [ENERGYPLUS_API_INTEGRATION.md](../ENERGYPLUS_API_INTEGRATION.md) for eppy vs API comparison
 - **API Source Code:** See [backend/api/](../backend/api/) for implementation details
 
 ## Contributing

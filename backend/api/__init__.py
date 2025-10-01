@@ -13,6 +13,9 @@ Main classes:
     - SimulationMonitor: Real-time simulation monitoring
     - AdaptiveController: Adaptive control for dynamic optimization
     - EnergyPlusRuntime: Direct EnergyPlus Python API integration
+    - LiveDashboard: Web-based real-time dashboard
+    - FileLogger: Multi-format file logging
+    - StructuredLogger: Hierarchical event logging
 """
 
 from .simulation_api import SimulationAPI
@@ -21,6 +24,7 @@ from .config_builder import SimulationConfig
 from .event_hooks import SimulationEventHandler
 from .multi_zone_manager import MultiZoneManager, MultiZoneStateManager
 from .realtime_monitor import SimulationMonitor, AdaptiveController, LiveDashboard
+from .file_logger import FileLogger, StructuredLogger, MetricsAggregator
 from .exceptions import (
     SimulationAPIError,
     SimulationNotFoundError,
@@ -45,7 +49,7 @@ except ImportError:
     HVACController = None
     create_runtime_controller = None
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __all__ = [
     'SimulationAPI',
     'StateManager',
@@ -56,6 +60,9 @@ __all__ = [
     'SimulationMonitor',
     'AdaptiveController',
     'LiveDashboard',
+    'FileLogger',
+    'StructuredLogger',
+    'MetricsAggregator',
     'SimulationAPIError',
     'SimulationNotFoundError',
     'InvalidStateError',
