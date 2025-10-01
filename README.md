@@ -20,6 +20,9 @@ It is divided into a frontend (GUI) and a backend (REST API), which are implemen
 ### Project Documentation
 - **[OVERVIEW.md](OVERVIEW.md)** - Comprehensive project overview with architecture details, module breakdown, and technical stack
 - **[IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md)** - Roadmap for future enhancements including Python API and occupancy forecasting
+- **[ENHANCED_FEATURES.md](ENHANCED_FEATURES.md)** - Multi-zone simulation and real-time monitoring guide
+- **[ENERGYPLUS_API_INTEGRATION.md](ENERGYPLUS_API_INTEGRATION.md)** - eppy vs EnergyPlus Python API comparison and integration
+- **[REALTIME_CONTROL_GUIDE.md](REALTIME_CONTROL_GUIDE.md)** - Complete guide to real-time control and monitoring 🆕
 
 ### Module Documentation
 - **[Python API](backend/api/)** - Programmatic interface for simulation control and state management

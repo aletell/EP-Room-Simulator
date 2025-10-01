@@ -148,16 +148,33 @@ python example_07_energyplus_api.py
 - Enables adaptive control based on real-time conditions
 - See `ENERGYPLUS_API_INTEGRATION.md` for detailed comparison
 
+### Example 8: Complete Real-Time Monitoring 🆕
+**File:** `example_08_realtime_monitoring.py`
+
 Demonstrates:
-- Registering event callbacks
-- Responding to simulation lifecycle events
-- Automatic result saving
-- Error handling with events
+- Complete real-time monitoring and control workflow
+- Live console output showing changes as they happen
+- Data logging for post-simulation analysis
+- Automatic window control based on temperatures
+- Adaptive HVAC setpoint adjustment
+- Result visualization with matplotlib
 
 **Usage:**
 ```bash
-python example_03_event_driven.py
+python example_08_realtime_monitoring.py
 ```
+
+**Features:**
+- RealTimeController class with monitoring and control
+- Threshold-based alerts and actions
+- CSV logging of all timesteps
+- Statistics collection (window openings, HVAC adjustments)
+- Automatic plot generation
+- Production-ready example code
+
+**See Also:**
+- `REALTIME_CONTROL_GUIDE.md` - Complete guide to real-time control
+- `ENERGYPLUS_API_INTEGRATION.md` - API reference and comparison
 
 ## Required Files
 
