@@ -17,6 +17,16 @@ It is divided into a frontend (GUI) and a backend (REST API), which are implemen
 ***
 ## Documentation
 
+### Project Documentation
+- **[OVERVIEW.md](OVERVIEW.md)** - Comprehensive project overview with architecture details, module breakdown, and technical stack
+- **[IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md)** - Roadmap for future enhancements including Python API and occupancy forecasting
+
+### Module Documentation
+- **[Python API](backend/api/)** - Programmatic interface for simulation control and state management
+- **[Occupancy Forecasting](backend/forecast/)** - Machine learning-based occupancy prediction module
+- **[Examples](examples/)** - Sample scripts demonstrating API usage and forecasting
+
+### External Documentation
 Further documentation can be found [here](https://ccwi.github.io/EP-Room-Simulator/). 
 
 You may also watch our [Demo Video](https://ccwi.github.io/EP-Room-Simulator/images/demo_video.mp4). 
@@ -64,3 +74,74 @@ node server.js
 If only the REST API is needed, the backend application can be run standalone.<br>
 However, if the frontend is started without the backend, it will not be able to perform any simulation!<br>
 Always make sure, that the MongoDB instance is accessible (Docker is running).
+
+***
+
+## New Features
+
+### Python API for Programmatic Control
+
+A comprehensive Python API is now available for programmatic simulation control:
+
+```python
+from backend.api import SimulationAPI, SimulationConfig
+
+# Initialize API
+api = SimulationAPI(base_url='http://localhost:5000')
+
+# Build configuration
+config = (SimulationConfig()
+    .with_idf_file('models/office.idf')
+    .with_epw_file('weather/chicago.epw')
+    .with_room_dimensions(5.0, 6.0, 3.0)
+    .with_simulation_period('2024-01-01', '2024-01-31')
+    .build())
+
+# Create and run simulation
+sim = api.create_simulation('My Simulation')
+sim.configure(config)
+sim.start(async_mode=False)
+
+# Get results
+results = sim.get_results(output_format='dataframe')
+```
+
+**Features:**
+- Fluent configuration builder
+- State inspection and modification
+- Event-driven simulation control
+- Comprehensive error handling
+
+See [backend/api/](backend/api/) and [examples/](examples/) for more details.
+
+### Occupancy Forecasting
+
+Machine learning-based occupancy forecasting is now available:
+
+```python
+from backend.forecast import OccupancyForecaster
+
+# Train forecaster
+forecaster = OccupancyForecaster(model_type='linear')
+forecaster.train(historical_data)
+
+# Generate forecast
+forecast = forecaster.predict(
+    start_date='2024-02-01',
+    end_date='2024-02-29',
+    interval='15min'
+)
+
+# Use in simulation
+forecast.to_csv('occupancy_forecast.csv')
+```
+
+**Supported Models:**
+- Simple pattern-based forecasting
+- Hourly average models
+- Linear regression with temporal features
+- (Future: LSTM, Prophet, and ensemble models)
+
+See [backend/forecast/](backend/forecast/) for more details.
+
+***
