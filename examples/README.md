@@ -1,0 +1,526 @@
+# EP-Room-Simulator API Examples
+
+This directory contains example scripts demonstrating how to use the EP-Room-Simulator Python API for programmatic simulation control.
+
+## Prerequisites
+
+Before running these examples, ensure that:
+
+1. The backend server is running on `http://localhost:5000`
+2. MongoDB is accessible
+3. Python dependencies are installed:
+   ```bash
+   pip install -r ../requirements.txt
+   ```
+
+## Examples
+
+### Example 1: Basic Simulation Control
+**File:** `example_01_basic_simulation.py`
+
+Demonstrates:
+- Creating a simulation via API
+- Building configuration with fluent interface
+- Starting and monitoring simulation
+- Retrieving results
+
+**Usage:**
+```bash
+python example_01_basic_simulation.py
+```
+
+### Example 2: Dynamic State Modification
+**File:** `example_02_state_modification.py`
+
+Demonstrates:
+- Starting simulation asynchronously
+- Inspecting simulation state during execution
+- Modifying parameters based on conditions
+- Adaptive control logic
+
+**Usage:**
+```bash
+python example_02_state_modification.py
+```
+
+**Note:** This example requires backend support for state inspection and modification, which is planned for future implementation.
+
+### Example 3: Event-Driven Control
+**File:** `example_03_event_driven.py`
+
+Demonstrates:
+- Registering event callbacks
+- Monitoring simulation lifecycle events
+- Timestep-level control
+- State change notifications
+
+**Usage:**
+```bash
+python example_03_event_driven.py
+```
+
+### Example 4: Occupancy Forecasting
+**File:** `example_04_occupancy_forecasting.py`
+
+Demonstrates:
+- Training occupancy forecasting models
+- Generating predictions with confidence intervals
+- Model evaluation and persistence
+- Integration with simulation workflow
+
+**Usage:**
+```bash
+python example_04_occupancy_forecasting.py
+```
+
+**Requirements:**
+- pandas
+- numpy
+- scikit-learn
+
+### Example 5: Multi-Zone Simulation
+**File:** `example_05_multi_zone.py`
+
+Demonstrates:
+- Managing multiple zones with different IDF files
+- Defining inter-zone connections (airflow, thermal)
+- Coordinated parameter control across zones
+- Configuration import/export
+
+**Usage:**
+```bash
+python example_05_multi_zone.py
+```
+
+**Key Features:**
+- Multiple IDF file support (inspired by nestli)
+- Zone connections for airflow and thermal coupling
+- Coordinated HVAC and ventilation control
+
+### Example 6: Real-Time Monitoring & Adaptive Control
+**File:** `example_06_realtime_control.py`
+
+Demonstrates:
+- Real-time simulation monitoring
+- Threshold-based alerts
+- Adaptive control rules
+- Dynamic parameter modification during execution
+- Historical data collection
+
+**Usage:**
+```bash
+python example_06_realtime_control.py
+```
+
+**Features:**
+- SimulationMonitor for real-time observation
+- AdaptiveController for dynamic control
+- Custom control rules and callbacks
+
+### Example 7: EnergyPlus Python API Integration 🆕
+**File:** `example_07_energyplus_api.py`
+
+Demonstrates:
+- Direct EnergyPlus Python API usage (beyond eppy)
+- Runtime sensor/actuator access
+- Advanced window control strategies
+- Dynamic HVAC control
+- Custom control logic during simulation
+
+**Usage:**
+```bash
+python example_07_energyplus_api.py
+```
+
+**Requirements:**
+- EnergyPlus 9.3 or later
+- pyenergyplus package (`pip install pyenergyplus`)
+
+**Key Capabilities:**
+- Real-time state inspection during simulation
+- Modify parameters while simulation is running
+- Custom control logic with sensors and actuators
+- Integration with external systems and ML models
+
+**Why EnergyPlus Python API?**
+- eppy can only modify IDF files before simulation
+- EnergyPlus Python API provides runtime access
+- Enables adaptive control based on real-time conditions
+- See `ENERGYPLUS_API_INTEGRATION.md` for detailed comparison
+
+### Example 8: Complete Real-Time Monitoring 🆕
+**File:** `example_08_realtime_monitoring.py`
+
+Demonstrates:
+- Complete real-time monitoring and control workflow
+- Live console output showing changes as they happen
+- Data logging for post-simulation analysis
+- Automatic window control based on temperatures
+- Adaptive HVAC setpoint adjustment
+- Result visualization with matplotlib
+
+**Usage:**
+```bash
+python example_08_realtime_monitoring.py
+```
+
+**Features:**
+- RealTimeController class with monitoring and control
+- Threshold-based alerts and actions
+- CSV logging of all timesteps
+- Statistics collection (window openings, HVAC adjustments)
+- Automatic plot generation
+- Production-ready example code
+
+**See Also:**
+- `REALTIME_CONTROL_GUIDE.md` - Complete guide to real-time control
+- `ENERGYPLUS_API_INTEGRATION.md` - API reference and comparison
+
+## Required Files
+
+For the examples to run successfully, you need:
+
+- **IDF File:** `models/example_office.idf` (building model)
+- **EPW File:** `weather/chicago.epw` (weather data)
+
+You can replace these with your own files by modifying the configuration in each example.
+
+## API Reference
+
+### SimulationAPI
+
+Main API class for simulation control.
+
+```python
+from backend.api import SimulationAPI
+
+api = SimulationAPI(base_url='http://localhost:5000')
+
+# Create simulation
+sim = api.create_simulation('My Simulation')
+
+# Configure simulation
+config = {...}
+sim.configure(config)
+
+# Start simulation
+sim.start(async_mode=False)
+
+# Get results
+results = sim.get_results(output_format='json')
+```
+
+### SimulationConfig
+
+Fluent configuration builder.
+
+```python
+from backend.api import SimulationConfig
+
+config = (SimulationConfig()
+    .with_idf_file('path/to/model.idf')
+    .with_epw_file('path/to/weather.epw')
+    .with_room_dimensions(5.0, 6.0, 3.0)
+    .with_simulation_period('2024-01-01', '2024-01-31')
+    .with_timestep(10)
+    .build())
+```
+
+### StateManager
+
+Interface for state inspection and modification.
+
+```python
+from backend.api import StateManager
+
+state_manager = StateManager(base_url='http://localhost:5000')
+
+# Get current temperature
+temp = state_manager.get_zone_temperature(sim_id, 'ZONE_1')
+
+# Set occupancy
+state_manager.set_occupancy(sim_id, 'ZONE_1', occupant_count=10)
+
+# Set window state
+state_manager.set_window_state(sim_id, 'WINDOW_1', is_open=True)
+```
+
+### SimulationEventHandler
+
+Event-driven simulation control.
+
+```python
+from backend.api import SimulationEventHandler
+
+events = SimulationEventHandler()
+
+@events.on_start
+def simulation_started(sim_id):
+    print(f"Started: {sim_id}")
+
+@events.on_complete
+def save_results(results):
+    results.to_csv('output.csv')
+
+events.attach(sim_id)
+```
+
+## Creating Custom Examples
+
+To create your own example:
+
+1. Import the required API modules:
+   ```python
+   from backend.api import SimulationAPI, SimulationConfig
+   ```
+
+2. Initialize the API client:
+   ```python
+   api = SimulationAPI(base_url='http://localhost:5000')
+   ```
+
+3. Build your configuration:
+   ```python
+   config = SimulationConfig().with_idf_file(...).build()
+   ```
+
+4. Create and run simulation:
+   ```python
+   sim = api.create_simulation('My Custom Simulation')
+   sim.configure(config)
+   sim.start()
+   ```
+
+## Troubleshooting
+
+### Connection Error
+```
+Failed to connect to backend at http://localhost:5000
+```
+**Solution:** Ensure the backend server is running:
+```bash
+cd backend
+python -m app
+```
+
+### Simulation Not Found
+```
+SimulationNotFoundError: Simulation {id} not found
+```
+**Solution:** Check that the simulation was created successfully and the ID is correct.
+
+### File Not Found
+```
+InvalidParameterError: IDF file not found: models/example_office.idf
+```
+**Solution:** Ensure all required files exist or update the file paths in the example.
+
+### Backend Feature Not Implemented
+```
+Variable inspection endpoint not yet implemented in backend
+```
+**Solution:** Some features require backend implementation. See IMPROVEMENT_PLAN.md for roadmap.
+
+## Advanced Usage
+
+### Batch Simulations
+
+Run multiple simulations with different configurations:
+
+```python
+from backend.api import SimulationAPI, SimulationConfig
+
+api = SimulationAPI()
+
+# Define configurations
+configs = [
+    {'width': 4.0, 'length': 5.0, 'height': 3.0},
+    {'width': 5.0, 'length': 6.0, 'height': 3.0},
+    {'width': 6.0, 'length': 7.0, 'height': 3.5},
+]
+
+# Run batch
+simulations = []
+for i, params in enumerate(configs):
+    config = (SimulationConfig()
+        .with_idf_file('models/office.idf')
+        .with_epw_file('weather/chicago.epw')
+        .with_room_dimensions(**params)
+        .build())
+    
+    sim = api.create_simulation(f'Batch Simulation {i+1}')
+    sim.configure(config)
+    sim.start(async_mode=True)
+    simulations.append(sim)
+
+# Wait for all to complete
+for sim in simulations:
+    sim.wait_for_completion()
+    print(f"Simulation {sim.sim_id} completed")
+```
+
+### Parameter Sweep
+
+Systematically vary parameters:
+
+```python
+import numpy as np
+
+widths = np.linspace(4.0, 8.0, 5)
+results_map = {}
+
+for width in widths:
+    config = (SimulationConfig()
+        .with_idf_file('models/office.idf')
+        .with_epw_file('weather/chicago.epw')
+        .with_room_dimensions(width, 6.0, 3.0)
+        .build())
+    
+    sim = api.create_simulation(f'Width {width}m')
+    sim.configure(config)
+    sim.start(async_mode=False)
+    
+    results = sim.get_results(output_format='dataframe')
+    results_map[width] = results
+    
+# Analyze results
+for width, results in results_map.items():
+    avg_temp = results['temperature'].mean()
+    print(f"Width {width}m: Average Temperature = {avg_temp}°C")
+```
+
+### Example 9: Production-Ready Real-Time Monitoring ⭐ **NEW**
+**File:** `example_09_production_monitoring.py`
+
+**This is the most comprehensive example showing a complete production system!**
+
+Demonstrates:
+- **Multiple file logging formats:**
+  - CSV for tabular data (tail -f compatible)
+  - JSON Lines for structured events
+  - Text logs for human-readable monitoring
+  - Structured logging by category (control, measurements, alerts, events, errors)
+- **Live web dashboard:**
+  - Real-time visualization at http://localhost:5001
+  - Automatic updates every second
+  - Temperature trends chart with Chart.js
+  - Activity log with color-coded events
+  - Responsive design
+- **File monitoring capabilities:**
+  - Immediate flush for real-time tail -f monitoring
+  - Multiple concurrent log files
+  - Timestamped entries
+- **Production features:**
+  - Error handling and recovery
+  - Performance metrics tracking
+  - Graceful shutdown
+  - Resource cleanup
+  - Signal handling
+  - Statistics export
+
+**Usage:**
+```bash
+# Terminal 1: Run simulation
+python example_09_production_monitoring.py
+
+# Terminal 2: Monitor CSV log
+tail -f simulation_logs/simulation_*.csv
+
+# Terminal 3: Monitor text log
+tail -f simulation_logs/simulation_*.log
+
+# Browser: Open http://localhost:5001 for live dashboard
+```
+
+**Features Demonstrated:**
+```python
+from api import FileLogger, StructuredLogger, MetricsAggregator, LiveDashboard
+
+# Multi-format file logging
+file_logger = FileLogger('./simulation_logs')
+file_logger.start()
+file_logger.log({'zone_temperature': 23.5, 'window_opening': 0.8})
+
+# Structured event logging
+structured_logger = StructuredLogger('./simulation_logs/structured')
+structured_logger.log_control_action('window_open', {'opening': 0.8})
+structured_logger.log_measurement('zone_temperature', 23.5, '°C')
+structured_logger.log_alert('high_temperature', 'Zone temp > 30°C', 'critical')
+
+# Live web dashboard
+dashboard = LiveDashboard(port=5001)
+dashboard.start()  # Starts Flask server in background thread
+dashboard.update_data({'zone_temperature': 23.5})  # Updates every timestep
+
+# Metrics aggregation
+metrics = MetricsAggregator()
+metrics.record('zone_temperature', 23.5)
+metrics.export_summary('./metrics_summary.json')
+metrics.export_timeseries('./metrics_timeseries.csv')
+```
+
+**Output Files:**
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.csv` - Tabular data
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.jsonl` - JSON events
+- `simulation_logs/simulation_YYYYMMDD_HHMMSS.log` - Text log
+- `simulation_logs/structured/control_*.jsonl` - Control actions
+- `simulation_logs/structured/measurements_*.jsonl` - Sensor readings
+- `simulation_logs/structured/alerts_*.jsonl` - System alerts
+- `simulation_logs/structured/events_*.jsonl` - General events
+- `simulation_logs/structured/errors_*.jsonl` - Error log
+- `simulation_logs/metrics_summary.json` - Statistical summary
+- `simulation_logs/metrics_timeseries.csv` - Time series data
+
+**Dashboard Screenshot:**
+The live dashboard shows:
+- Real-time temperature cards with gradients
+- Window opening percentage
+- HVAC setpoints
+- Relative humidity
+- Interactive Chart.js temperature trends
+- Activity log with timestamps
+- Auto-refresh every second
+
+**Requirements:**
+```bash
+pip install pyenergyplus  # EnergyPlus Python API
+pip install flask flask-cors  # For live dashboard (optional)
+```
+
+**Note:** This example is designed for production use and includes comprehensive error handling, logging, and monitoring capabilities suitable for research and industrial applications.
+
+## Quick Start Matrix
+
+| Example | API Level | Real-Time | Dashboard | Logging | Best For |
+|---------|-----------|-----------|-----------|---------|----------|
+| 1 | Basic | No | No | No | Learning API basics |
+| 2 | Intermediate | No | No | No | State modification |
+| 3 | Intermediate | No | No | No | Event-driven control |
+| 4 | Advanced | No | No | No | ML forecasting |
+| 5 | Advanced | No | No | No | Multi-zone setups |
+| 6 | Advanced | Yes | No | No | Real-time control intro |
+| 7 | Advanced | Yes | No | No | EnergyPlus API |
+| 8 | Advanced | Yes | No | Yes | Basic monitoring |
+| **9** | **Production** | **Yes** | **Yes** | **Yes** | **Production systems** ⭐ |
+
+## Additional Resources
+
+- **Main Documentation:** See [OVERVIEW.md](../OVERVIEW.md) for project architecture
+- **Improvement Plan:** See [IMPROVEMENT_PLAN.md](../IMPROVEMENT_PLAN.md) for future features
+- **Real-Time Control Guide:** See [REALTIME_CONTROL_GUIDE.md](../REALTIME_CONTROL_GUIDE.md) for workflow details
+- **EnergyPlus API Integration:** See [ENERGYPLUS_API_INTEGRATION.md](../ENERGYPLUS_API_INTEGRATION.md) for eppy vs API comparison
+- **API Source Code:** See [backend/api/](../backend/api/) for implementation details
+
+## Contributing
+
+To contribute new examples:
+
+1. Create a new example file: `example_XX_description.py`
+2. Follow the existing example structure
+3. Add documentation to this README
+4. Test your example thoroughly
+5. Submit a pull request
+
+## License
+
+These examples are part of the EP-Room-Simulator project and follow the same license.
